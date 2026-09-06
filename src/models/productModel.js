@@ -1,12 +1,19 @@
 import { supabase } from "../config/supabaseClient.js";
 
 export const ProductModel = {
-  async getAll() {
-    const { data, error } = await supabase
+  async getAll(categoryId) {
+    // 1. Start the base query
+    let query = supabase
       .from("products")
-      .select(
-        "id, sku, name, description, price, stock, category_id"
-      );
+      .select("id, sku, name, description, price, stock, category_id");
+
+    // 2. If a category string/ID was passed in, apply the filter
+    if (categoryId) {
+      query = query.eq("category_id", categoryId);
+    }
+
+    // 3. Execute the query
+    const { data, error } = await query;
     if (error) throw error;
     return data;
   },
